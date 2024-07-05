@@ -34,3 +34,5 @@ grid_search.fit(X_train, y_train)
 # 打印最佳參數和最佳模型的分數
 print("Best parameters:", grid_search.best_params_)
 print("Best score (MSE):", -grid_search.best_score_)
+# {'max_depth': 3, 'min_samples_leaf': 4, 'min_samples_split': 20, 'n_estimators': 700}
+# {'max_depth': 2, 'min_samples_leaf': 4, 'min_samples_split': 20, 'n_estimators': 600}
