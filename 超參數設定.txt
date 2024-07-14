@@ -1,0 +1,20 @@
+SVR - TOC
+
+random_state = 25
+model = SVR(kernel='linear', C=0.097,epsilon=0.13)
+
+train_r2:  0.8983816193597249
+test_r2:   0.7474997363945428
+train_mse: 0.033472307357513525
+test_mse:  0.11704528606499032
+
+
+XGBoost - TN(SVR表現不好)
+
+random_state = 8400
+model = XGBRegressor(n_estimators = 9)
+
+train_r2:  0.895985483073711
+test_r2:   0.748559320284178
+train_mse: 0.0007047284774297836
+test_mse:  0.0016135564103795174
