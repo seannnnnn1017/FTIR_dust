@@ -1,0 +1,5 @@
+Upload CSV or XLSX file,Select Model Type,MSE and R² Score,Prediction Plot,flag,username,timestamp
+flagged\Upload CSV or XLSX file\aa19b0d40d1449e5eb16\FTIR_Data.xlsx,Random Forest,"Test MSE: 0.3154051816445314
+R² Score: -0.6036194367567753",flagged\Prediction Plot\7915db424237a18292bf\prediction_plot.png,,,2024-07-25 19:11:51.028574
+flagged\Upload CSV or XLSX file\b373aba48c3226ce468a\FTIR_Data.xlsx,Random Forest,"Test MSE: 0.3154051816445314
+R² Score: -0.6036194367567753",flagged\Prediction Plot\72ad3ad9d846611b3f82\prediction_plot.png,,,2024-07-25 19:11:53.108365
