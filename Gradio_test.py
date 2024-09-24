@@ -123,6 +123,7 @@ def train_and_predict(data, model_type):
     features = pd.concat([data.iloc[:, 650:820], data.iloc[:, 850:1220],
                           data.iloc[:, 1250:1750], data.iloc[:, 2800:3000]], axis=1)
     features = data.iloc[:, :-1]
+    features = pd.concat( [data.iloc[:, 900:1000]], axis=1)
     target = data.iloc[:, -1]
 
     # 分割訓練集和測試集

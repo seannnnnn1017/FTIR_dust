@@ -1,33 +1,19 @@
-import numpy as np
-import gradio as gr
+import pandas as pd
 
-demo = gr.Blocks()
+# 讀取 Excel 文件
+file_path = 'dataset/FTIR_Data.xlsx'
+data = pd.read_excel(file_path, header=0)  # 確保 header=0 表示第一行是標題
 
+# 顯示資料的前幾行和所有欄位名稱
+print("資料前五行：")
+print(data.head())
 
-def flip_text(x):
-    print(x)
-    return x[::-1]
+print("\n所有欄位名稱：")
+print(data.columns.tolist())  # 顯示所有欄位名稱
 
-
-def flip_image(x):
-    return np.fliplr(x)
-
-
-with demo:
-    gr.Markdown("Flip text or image files using this demo.")
-    with gr.Tabs():
-        with gr.TabItem("Flip Text"):
-            with gr.Row():
-                text_input = gr.Textbox()
-                text_output = gr.Textbox()
-            text_button = gr.Button("Flip")
-        with gr.TabItem("Flip Image"):
-            with gr.Row():
-                image_input = gr.Image()
-                image_output = gr.Image()
-            image_button = gr.Button("Flip")
-
-    text_button.click(flip_text, inputs=text_input, outputs=text_output)
-    image_button.click(flip_image, inputs=image_input, outputs=image_output)
-
-demo.launch()
+# 檢查標識符欄位是否存在
+identifier_column = '樣本'  # 請確認這裡是你的標識符欄位名稱
+if identifier_column in data.columns:
+    print(f"標識符欄位 '{identifier_column}' 存在。")
+else:
+    print(f"標識符欄位 '{identifier_column}' 不存在。")
