@@ -13,7 +13,7 @@ def all_models():
     models_name = ['Random Forest', 'SVR', 'XGBoost']
     models = [RandomForestRegressor(n_estimators=1600, max_depth=120, min_samples_leaf=14, min_samples_split=2, n_jobs=-1),
              SVR(kernel='linear', C=0.097, epsilon=0.13),
-             XGBRegressor(n_estimators=9, random_state=8400)]
+             XGBRegressor(n_estimators=9)]
     plt.figure(figsize=(10, 6))
     plt.plot(y_test.values, label='True Values')
 

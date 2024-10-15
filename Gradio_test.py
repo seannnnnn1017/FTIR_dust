@@ -122,7 +122,7 @@ def train_and_predict(data, model_type):
     # 讀取數據並進行處理
     features = pd.concat([data.iloc[:, 650:820], data.iloc[:, 850:1220],
                           data.iloc[:, 1250:1750], data.iloc[:, 2800:3000]], axis=1)
-    features = data.iloc[:, :-1]
+    #features = data.iloc[:, :-1]
     target = data.iloc[:, -1]
 
     # 分割訓練集和測試集
@@ -227,7 +227,7 @@ with gr.Blocks() as demo:
             gr.Markdown("# Test Model Selection Interface")
 
     predict_button.click(predict, inputs=[file_input, model_radio], outputs=[result_text, result_image])
-    save_model_button.click(save_model_click, outputs=result_text)
-    auto_save.change(fn=checkboxes_changed)
+    save_model_button.click(save_model_click,inputs=None, outputs=result_text)
+    auto_save.change(fn=checkboxes_changed,inputs=None, outputs=None)
 
 demo.launch(share=True)

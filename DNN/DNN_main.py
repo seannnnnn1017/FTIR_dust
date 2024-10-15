@@ -4,12 +4,12 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 # 讀取資料
-data = pd.read_excel('dataset/FTIR_Data.xlsx')
+data = pd.read_excel('dataset\Soil_Organic_Carbon_Data.xlsx')
 
 # 提取特定列範圍作為特徵
 features = pd.concat([data.iloc[:, 650:820], data.iloc[:, 850:1220], 
                       data.iloc[:, 1250:1750], data.iloc[:, 2800:3000]], axis=1)
-
+features = data.iloc[:, 1:-1]
 # 假設目標變量在數據集中為最後一列
 target = data.iloc[:, -1]
 
@@ -19,12 +19,15 @@ X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=
 
 # 構建神經網絡模型
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(1048, activation='relu', input_shape=(X_train.shape[1],)),
-    tf.keras.layers.Dense(512, activation='relu'), # Dropout 正則化 
+   tf.keras.layers.Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
     tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dense(1)  # 输出层
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(16, activation='relu'),
+    tf.keras.layers.Dense(8, activation='relu'),
+    
+    tf.keras.layers.Dense(1)  # 輸出層
 ])
-optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
 # 編譯模型
 model.compile(optimizer='adam', loss='mse')
 
@@ -37,6 +40,17 @@ print(f'Test loss: {loss}')
 
 # 預測
 y_pred = model.predict(X_test)
+
+# 繪製損失曲線
+plt.figure(figsize=(10, 6))
+plt.plot(history.history['loss'], label='train loss')
+plt.plot(history.history['val_loss'], label='val loss')
+plt.legend()
+plt.xlabel('epoch')
+plt.ylabel('loss')
+plt.title('loss')
+plt.show()
+
 
 # 繪製結果
 plt.figure(figsize=(10, 6))

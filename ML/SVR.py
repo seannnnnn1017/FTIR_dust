@@ -13,6 +13,8 @@ features = data.iloc[:, :-1]
 # 目標變量
 target = data.iloc[:, -1]
 
+
+
 # 分割資料集為訓練集和測試集
 random_state = 25
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=random_state)
