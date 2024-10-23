@@ -44,6 +44,7 @@ def create_cnn_model(input_shape):
         layers.Dense(32, activation='relu'),
         #layers.Dropout(0.3),
         layers.Dense(16, activation='relu'),
+        #layers.Dropout(0.3),
         layers.Dense(1)
     ])
     return model
@@ -63,7 +64,7 @@ y_train_np = y_train.to_numpy() if isinstance(y_train, pd.Series) else y_train
 y_test_np = y_test.to_numpy() if isinstance(y_test, pd.Series) else y_test
 
 # 訓練模型
-history = model.fit(X_train_np, y_train_np, epochs=100, batch_size=128, validation_split=0.2, verbose=1)
+history = model.fit(X_train_np, y_train_np, epochs=50, batch_size=128, validation_split=0.2, verbose=1)
 
 # 評估模型
 loss = model.evaluate(X_test_np, y_test_np)
