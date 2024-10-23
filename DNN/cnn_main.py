@@ -13,6 +13,7 @@ data = pd.read_excel('dataset/FTIR(調基準線).xlsx')
 # 提取特定列範圍作為特徵
 features = pd.concat([data.iloc[:, 650:820], data.iloc[:, 850:1220], 
                       data.iloc[:, 1250:1750], data.iloc[:, 2800:3000]], axis=1)
+#features= data.iloc[:,: -1]
 target = data.iloc[:, -1]
 
 # 分割訓練集和測試集
@@ -30,12 +31,19 @@ print(f"Input shape: {input_shape}")
 # 建立 CNN 模型
 def create_cnn_model(input_shape):
     model = models.Sequential([
-        layers.Conv1D(64, kernel_size=7, activation='relu', input_shape=input_shape),
-        layers.MaxPooling1D(pool_size=2),
+        layers.Conv1D(32, kernel_size=7, activation='relu', input_shape=input_shape),
+        layers.MaxPooling1D(pool_size=3),
         layers.Conv1D(128, kernel_size=5, activation='relu'),
-        layers.GlobalAveragePooling1D(),
+        layers.MaxPooling1D(pool_size=2),
+        layers.Flatten(),  # 添加 Flatten 層
+        
         layers.Dense(128, activation='relu'),
-        layers.Dropout(0.3),
+        #layers.Dropout(0.3),
+        layers.Dense(64, activation='relu'),
+        #layers.Dropout(0.3),
+        layers.Dense(32, activation='relu'),
+        #layers.Dropout(0.3),
+        layers.Dense(16, activation='relu'),
         layers.Dense(1)
     ])
     return model
@@ -55,7 +63,7 @@ y_train_np = y_train.to_numpy() if isinstance(y_train, pd.Series) else y_train
 y_test_np = y_test.to_numpy() if isinstance(y_test, pd.Series) else y_test
 
 # 訓練模型
-history = model.fit(X_train_np, y_train_np, epochs=200, batch_size=16, validation_split=0.2, verbose=1)
+history = model.fit(X_train_np, y_train_np, epochs=100, batch_size=128, validation_split=0.2, verbose=1)
 
 # 評估模型
 loss = model.evaluate(X_test_np, y_test_np)
@@ -63,12 +71,15 @@ print(f'Test loss: {loss}')
 
 # 預測
 y_pred = model.predict(X_test_np).flatten()
-
+# 計算訓練集的預測
+y_train_pred = model.predict(X_train_np).flatten()  # 使用訓練集進行預測
 # 計算 MSE 和 R²
 mse = mean_squared_error(y_test_np, y_pred)
 r2 = r2_score(y_test_np, y_pred)
-print(f'MSE: {mse}, R²: {r2}')
-
+train_mse = mean_squared_error(y_train_np, y_train_pred)  # 修正這裡
+train_r2 = r2_score(y_train_np, y_train_pred)  # 修正這裡
+print(f'test MSE: {mse}, test R²: {r2}')
+print(f'train MSE: {train_mse}, train R²: {train_r2}')
 # 繪製訓練和驗證損失曲線
 plt.figure(figsize=(10, 6))
 plt.plot(history.history['loss'], label='Train Loss')
