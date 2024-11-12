@@ -7,17 +7,22 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
 
+# 設定隨機種子
+seed_value = 42
+np.random.seed(seed_value)
+tf.random.set_seed(seed_value)
+
 # 讀取資料
-data = pd.read_excel('dataset/FTIR(調基準線).xlsx')
+data = pd.read_excel('dataset\FTIR(調基準線).xlsx')
 
 # 提取特定列範圍作為特徵
-features = pd.concat([data.iloc[:, 650:820], data.iloc[:, 850:1220], 
-                      data.iloc[:, 1250:1750], data.iloc[:, 2800:3000]], axis=1)
-#features= data.iloc[:,: -1]
+features = data.iloc[:, np.r_[650:820, 850:1220, 1250:1750, 2800:3000]]  # 只選擇特定範圍的列
+features.columns = features.columns.astype(str)  # 將所有列名稱轉換為字符串
+
 target = data.iloc[:, -1]
 
 # 分割訓練集和測試集
-X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=seed_value)
 
 # 特徵標準化
 scaler = StandardScaler()
@@ -31,20 +36,22 @@ print(f"Input shape: {input_shape}")
 # 建立 CNN 模型
 def create_cnn_model(input_shape):
     model = models.Sequential([
-        layers.Conv1D(32, kernel_size=7, activation='relu', input_shape=input_shape),
+        layers.Conv1D(64, kernel_size=7, activation='relu', input_shape=input_shape),
         layers.MaxPooling1D(pool_size=3),
         layers.Conv1D(128, kernel_size=5, activation='relu'),
         layers.MaxPooling1D(pool_size=2),
         layers.Flatten(),  # 添加 Flatten 層
         
         layers.Dense(128, activation='relu'),
-        #layers.Dropout(0.3),
+       
+        
         layers.Dense(64, activation='relu'),
-        #layers.Dropout(0.3),
+       
+        
         layers.Dense(32, activation='relu'),
-        #layers.Dropout(0.3),
-        layers.Dense(16, activation='relu'),
-        #layers.Dropout(0.3),
+       
+
+        
         layers.Dense(1)
     ])
     return model
@@ -64,7 +71,7 @@ y_train_np = y_train.to_numpy() if isinstance(y_train, pd.Series) else y_train
 y_test_np = y_test.to_numpy() if isinstance(y_test, pd.Series) else y_test
 
 # 訓練模型
-history = model.fit(X_train_np, y_train_np, epochs=50, batch_size=128, validation_split=0.2, verbose=1)
+history = model.fit(X_train_np, y_train_np, epochs=100, batch_size=64, validation_split=0.2, verbose=1)
 
 # 評估模型
 loss = model.evaluate(X_test_np, y_test_np)
@@ -81,6 +88,7 @@ train_mse = mean_squared_error(y_train_np, y_train_pred)  # 修正這裡
 train_r2 = r2_score(y_train_np, y_train_pred)  # 修正這裡
 print(f'test MSE: {mse}, test R²: {r2}')
 print(f'train MSE: {train_mse}, train R²: {train_r2}')
+
 # 繪製訓練和驗證損失曲線
 plt.figure(figsize=(10, 6))
 plt.plot(history.history['loss'], label='Train Loss')

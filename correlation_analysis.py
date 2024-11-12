@@ -1,4 +1,3 @@
-
 #%%
 import numpy as np
 import pandas as pd
@@ -89,7 +88,7 @@ significant_regions_a = {
     '1a': (650, 820),
     '2a': (850, 1220),
     '3a': (1250, 1750),
-    '4a': (2800,3000),
+    '4a': (2800, 3000),
 }
 significant_regions_b = {
 
@@ -101,11 +100,17 @@ plt.figure(figsize=(15, 6))
 for idx, row in high_toc_samples.iterrows():
     plt.plot(wavenumbers, row[:-1], label=f'High TOC(%) - Sample {idx+1}')
 
-for label, (start, end) in significant_regions_a.items():
-    plt.axvspan(start, end, color='grey', alpha=0.3, label=label)
-for label, (start, end) in significant_regions_b.items():
-    plt.axvspan(start, end, color='yellow', alpha=0.3, label=label)
-plt.title('FTIR Spectra for High TOC(%) Samples with Highlighted Organic Compound Regions')
+# Highlight regions outside significant ranges
+for start, end in significant_regions_a.values():
+    plt.axvspan(start, end, color='white', alpha=0)  # Set to transparent for significant regions
+
+# Highlight the areas outside the significant regions with yellow
+plt.axvspan(820, 850, color='yellow', alpha=0.3)  # Between 1a and 2a
+plt.axvspan(1220, 1250, color='yellow', alpha=0.3)  # Between 2a and 3a
+plt.axvspan(1750, 2800, color='yellow', alpha=0.3)  # Between 3a and 4a
+plt.axvspan(3000, max(wavenumbers), color='yellow', alpha=0.3)  # Right of the last range
+
+plt.title('FTIR Spectra for High TOC(%) Samples with Highlighted Non-Organic Compound Regions')
 plt.xlabel('Wavenumber (cm⁻¹)')
 plt.ylabel('Intensity (%)')
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -117,11 +122,18 @@ plt.figure(figsize=(15, 6))
 for idx, row in low_toc_samples.iterrows():
     plt.plot(wavenumbers, row[:-1], label=f'Low TOC(%) - Sample {idx+1}')
 
-for label, (start, end) in significant_regions_a.items():
-    plt.axvspan(start, end, color='grey', alpha=0.3, label=label)
-for label, (start, end) in significant_regions_b.items():
-    plt.axvspan(start, end, color='yellow', alpha=0.3, label=label)
-plt.title('FTIR Spectra for Low TOC(%) Samples with Highlighted Organic Compound Regions')
+# Highlight regions outside significant ranges
+for start, end in significant_regions_a.values():
+    plt.axvspan(start, end, color='white', alpha=0)  # Set to transparent for significant regions
+
+# Highlight the areas outside the significant regions with yellow
+
+plt.axvspan(820, 850, color='yellow', alpha=0.3)  # Between 1a and 2a
+plt.axvspan(1220, 1250, color='yellow', alpha=0.3)  # Between 2a and 3a
+plt.axvspan(1750, 2800, color='yellow', alpha=0.3)  # Between 3a and 4a
+plt.axvspan(3000, max(wavenumbers), color='yellow', alpha=0.3)  # Right of the last range
+
+plt.title('FTIR Spectra for Low TOC(%) Samples with Highlighted Non-Organic Compound Regions')
 plt.xlabel('Wavenumber (cm⁻¹)')
 plt.ylabel('Intensity (%)')
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -133,11 +145,18 @@ plt.figure(figsize=(15, 6))
 for idx, row in all_toc_samples.iterrows():
     plt.plot(wavenumbers, row[:-1], label=f'All TOC(%) - Sample {idx+1}')
 
-for label, (start, end) in significant_regions_a.items():
-    plt.axvspan(start, end, color='grey', alpha=0.3, label=label)
-for label, (start, end) in significant_regions_b.items():
-    plt.axvspan(start, end, color='yellow', alpha=0.3, label=label)
-plt.title('FTIR Spectra for Low TOC(%) Samples with Highlighted Organic Compound Regions')
+# Highlight regions outside significant ranges
+for start, end in significant_regions_a.values():
+    plt.axvspan(start, end, color='white', alpha=0)  # Set to transparent for significant regions
+
+# Highlight the areas outside the significant regions with yellow
+
+plt.axvspan(820, 850, color='yellow', alpha=0.3)  # Between 1a and 2a
+plt.axvspan(1220, 1250, color='yellow', alpha=0.3)  # Between 2a and 3a
+plt.axvspan(1750, 2800, color='yellow', alpha=0.3)  # Between 3a and 4a
+plt.axvspan(3000, max(wavenumbers), color='yellow', alpha=0.3)  # Right of the last range
+
+plt.title('FTIR Spectra for All TOC(%) Samples with Highlighted Non-Organic Compound Regions')
 plt.xlabel('Wavenumber (cm⁻¹)')
 plt.ylabel('Intensity (%)')
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
