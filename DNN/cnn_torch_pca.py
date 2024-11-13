@@ -1,3 +1,4 @@
+#%%
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -27,9 +28,10 @@ data = pd.read_excel('dataset/FTIR(調基準線).xlsx')
 
 selected_features = data.iloc[:,:-1]
 print(selected_features.head())
-pca = PCA(n_components=10)
+pca = PCA(n_components=100)
 X_pca_5 = pca.fit_transform(selected_features)
 features = pd.DataFrame(X_pca_5, columns=[f'PC{i+1}' for i in range(X_pca_5.shape[1])])
+
 target = data.iloc[:, -1]
 
 # 分割訓練集和測試集
