@@ -5,8 +5,8 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 # 讀取資料
-ftir_data_sheet = pd.read_excel('dataset/FTIR_Data.xlsx')
-
+ftir_data_sheet = pd.read_excel('C:/Users/fishd/Desktop/Github/FTIR_dust/dataset/土壤DATA/訓練用/ALL_4000_750_881筆(未調).xlsx')
+ftir_data_sheet=ftir_data_sheet.iloc[:, 1:]
 
 # Plot the distribution of TOC(%)
 plt.figure(figsize=(10, 6))

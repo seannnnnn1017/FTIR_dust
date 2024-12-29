@@ -46,7 +46,7 @@ y_train_np = y_train.to_numpy() if isinstance(y_train, pd.Series) else y_train
 y_test_np = y_test.to_numpy() if isinstance(y_test, pd.Series) else y_test
 
 # 設定 DataLoader
-batch_size = 64
+batch_size = 256
 train_dataset = TensorDataset(torch.tensor(X_train_np, dtype=torch.float32), torch.tensor(y_train_np, dtype=torch.float32))
 test_dataset = TensorDataset(torch.tensor(X_test_np, dtype=torch.float32), torch.tensor(y_test_np, dtype=torch.float32))
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)

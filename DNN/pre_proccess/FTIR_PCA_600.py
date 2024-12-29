@@ -1,0 +1,174 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import DataLoader, TensorDataset
+from sklearn.decomposition import PCA
+from tqdm import tqdm
+
+# 設定隨機種子
+seed_value = 42
+np.random.seed(seed_value)
+torch.manual_seed(seed_value)
+torch.cuda.manual_seed(seed_value)
+
+# 確保在使用 CUDA 時的確定性
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# 讀取資料
+data = pd.read_excel('C:/Users/fishd/Desktop/Github/FTIR_dust/dataset/FTIR(調基準線).xlsx')
+
+# 分離舊資料與新資料
+old_data = data.iloc[:-1, :-1]
+new_data = data.iloc[-1, :-1]
+
+# 對資料進行標準化
+scaler = StandardScaler()
+old_data_scaled = scaler.fit_transform(old_data)
+new_data_scaled = scaler.transform(new_data.values.reshape(1, -1))
+
+# 使用 PCA 進行降維
+pca = PCA(n_components=100)
+X_pca = pca.fit_transform(old_data_scaled)
+new_pca = pca.transform(new_data_scaled)
+
+# 目標變量
+target = data.iloc[:-1, -1]
+
+# 分割訓練集和測試集
+X_train, X_test, y_train, y_test = train_test_split(X_pca, target, test_size=0.2, random_state=seed_value)
+
+# 將資料轉換為 PyTorch Tensor
+X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
+X_test_tensor = torch.tensor(X_test, dtype=torch.float32)
+y_train_tensor = torch.tensor(y_train.values, dtype=torch.float32)
+y_test_tensor = torch.tensor(y_test.values, dtype=torch.float32)
+
+# 調整輸入形狀以適應 CNN 模型
+X_train_tensor = X_train_tensor.unsqueeze(1)  # 增加 channel 維度
+X_test_tensor = X_test_tensor.unsqueeze(1)  # 增加 channel 維度
+
+# 設定 DataLoader
+batch_size = 256
+train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
+test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+# 定義 CNN 模型
+class CNNRegressor(nn.Module):
+    def __init__(self, input_shape):
+        super(CNNRegressor, self).__init__()
+        self.conv1 = nn.Conv1d(1, 32, kernel_size=7, padding=3)
+        self.pool1 = nn.MaxPool1d(kernel_size=3)
+        self.conv2 = nn.Conv1d(32, 64, kernel_size=5, padding=2)
+        self.pool2 = nn.MaxPool1d(kernel_size=2)
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(1024, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 32)
+        self.fc4 = nn.Linear(32, 1)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = torch.relu(x)
+        x = self.pool1(x)
+        x = self.conv2(x)
+        x = torch.relu(x)
+        x = self.pool2(x)
+        x = self.flatten(x)
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = torch.relu(self.fc3(x))
+        x = self.fc4(x)
+        return x
+
+input_shape = X_train_tensor.shape[1]
+model = CNNRegressor(input_shape).to(device)
+criterion = nn.L1Loss()
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
+
+# 訓練模型
+epochs = 500
+model.train()
+train_losses = []
+val_losses = []
+
+for epoch in tqdm(range(epochs), desc=f"Train epochs {epochs}"):
+    train_loss = 0.0
+    for X_batch, y_batch in train_loader:
+        X_batch, y_batch = X_batch.to(device), y_batch.to(device)
+        optimizer.zero_grad()
+        outputs = model(X_batch)
+        loss = criterion(outputs.flatten(), y_batch)
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item() * X_batch.size(0)
+
+    train_loss /= len(train_loader.dataset)
+    train_losses.append(train_loss)
+    
+    # 驗證損失
+    model.eval()
+    val_loss = 0.0
+    with torch.no_grad():
+        for X_batch, y_batch in test_loader:
+            X_batch, y_batch = X_batch.to(device), y_batch.to(device)
+            outputs = model(X_batch)
+            loss = criterion(outputs.flatten(), y_batch)
+            val_loss += loss.item() * X_batch.size(0)
+
+    val_loss /= len(test_loader.dataset)
+    val_losses.append(val_loss)
+    model.train()
+
+# 評估模型
+model.eval()
+with torch.no_grad():
+    y_pred_train = model(X_train_tensor.to(device)).cpu().numpy().flatten()
+    y_pred_test = model(X_test_tensor.to(device)).cpu().numpy().flatten()
+
+train_mse = mean_squared_error(y_train, y_pred_train)
+train_r2 = r2_score(y_train, y_pred_train)
+test_mse = mean_squared_error(y_test, y_pred_test)
+test_r2 = r2_score(y_test, y_pred_test)
+
+print(f'train MSE: {train_mse}, train R²: {train_r2}')
+print(f'test MSE: {test_mse}, test R²: {test_r2}')
+
+# 繪製訓練和驗證損失曲線
+plt.figure(figsize=(10, 6))
+plt.plot(train_losses, label='Train Loss')
+plt.plot(val_losses, label='Validation Loss')
+plt.legend()
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training and Validation Loss')
+plt.show()
+
+# 繪製預測結果與真實值的比較
+plt.figure(figsize=(10, 6))
+plt.plot(y_test.values, label='True Values', marker='o')
+plt.plot(y_pred_test, label='Predictions', linestyle='--', marker='x')
+plt.legend()
+plt.xlabel('Sample Index')
+plt.ylabel('Target Value')
+plt.title('Model Predictions vs True Values')
+plt.show()
+
+# 使用模型對新資料進行預測
+model.eval()  # 設置模型為推論模式（evaluation mode）
+X_new_tensor = torch.tensor(new_pca, dtype=torch.float32).unsqueeze(0).to(device)  # 增加 batch 維度
+with torch.no_grad():  # 關閉梯度計算
+    prediction = model(X_new_tensor).cpu().numpy().flatten()
+
+print("Prediction for new data:", prediction[0])
+print('True Value:', data.iloc[-1, -1])
