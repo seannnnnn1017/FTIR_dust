@@ -25,23 +25,23 @@ This project presents a machine learning-based approach for predicting **Total O
 
 > 📌 Reference Figures:
 > - **Fig. 1**: Sampling Area Diagram  
->![Reference Figures Overview](assets\Sampling_Area_Diagram.png)
+>![Reference Figures Overview](assets/Sampling_Area_Diagram.png)
 > - **Fig. 2**: Sample Preprocessing Flow  
->![Reference Figures Overview](assets\Preprocessing_Diagram.png)
+>![Reference Figures Overview](assets/Preprocessing_Diagram.png)
 > - **Fig. 3**: Raw FTIR Spectra Visualization  
->![Reference Figures Overview](assets\Raw_FTIR_Spectra_Visualization.png)
+>![Reference Figures Overview](assets/Raw_FTIR_Spectra_Visualization.png)
 > - **Fig. 4**: Model Training Framework  
->![Reference Figures Overview](assets\Framework.png)
+>![Reference Figures Overview](assets/Framework.png)
 > - **Fig. 5**: Data Integration Framework  
->![Reference Figures Overview](assets\Data_Integration.png)
+>![Reference Figures Overview](assets/Data_Integration.png)
 > - **Fig. 6**: TOC CDF & Outlier Detection  
->![Reference Figures Overview](assets\image.png)
+>![Reference Figures Overview](assets/image.png)
 > - **Fig. 7**: PCA Explained Variance  
->![Reference Figures Overview](assets\PCA.png)
+>![Reference Figures Overview](assets/PCA.png)
 > - **Fig. 8**: TOC Distribution Pre/Post Outlier Removal  
->![Reference Figures Overview](assets\Outlier.png)
+>![Reference Figures Overview](assets/Outlier.png)
 > - **Fig. 9**: Model Prediction Performance Comparison  
->![Reference Figures Overview](assets\Prediction.png)
+>![Reference Figures Overview](assets/Prediction.png)
 ## 🧠 Machine Learning Models
 
 Three regression models were evaluated:
